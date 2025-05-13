@@ -9,19 +9,30 @@ import {
 } from './definitions';
 import { formatCurrency } from './utils';
 
+// デプロイ環境用
 const sql = postgres(process.env.POSTGRES_URL!, { ssl: 'require' });
+
+//ローカル開発環境用
+// const sql = postgres(process.env.POSTGRES_URL!, { ssl: false });
+
+// アプリケーション終了時に接続を閉じる
+process.on('SIGINT', async () => {
+  console.log('Closing database connection...');
+  await sql.end();
+  process.exit(0);
+});
 
 export async function fetchRevenue() {
   try {
     // Artificially delay a response for demo purposes.
     // Don't do this in production :)
 
-    // console.log('Fetching revenue data...');
-    // await new Promise((resolve) => setTimeout(resolve, 3000));
+    console.log('Fetching revenue data...');
+    await new Promise((resolve) => setTimeout(resolve, 3000));
 
     const data = await sql<Revenue[]>`SELECT * FROM revenue`;
 
-    // console.log('Data fetch completed after 3 seconds.');
+    console.log('Data fetch completed after 3 seconds.');
 
     return data;
   } catch (error) {
@@ -52,6 +63,8 @@ export async function fetchLatestInvoices() {
 
 export async function fetchCardData() {
   try {
+
+    console.log('Fetching card data...');
     // You can probably combine these into a single SQL query
     // However, we are intentionally splitting them to demonstrate
     // how to initialize multiple queries in parallel with JS.
@@ -68,10 +81,19 @@ export async function fetchCardData() {
       invoiceStatusPromise,
     ]);
 
+    console.log('Raw data:', data);
+
     const numberOfInvoices = Number(data[0][0].count ?? '0');
     const numberOfCustomers = Number(data[1][0].count ?? '0');
     const totalPaidInvoices = formatCurrency(data[2][0].paid ?? '0');
     const totalPendingInvoices = formatCurrency(data[2][0].pending ?? '0');
+
+    console.log('Processed data:', {
+      numberOfCustomers,
+      numberOfInvoices,
+      totalPaidInvoices,
+      totalPendingInvoices,
+    });
 
     return {
       numberOfCustomers,
@@ -164,7 +186,7 @@ export async function fetchInvoiceById(id: string) {
   } catch (error) {
     console.error('Database Error:', error);
     throw new Error('Failed to fetch invoice.');
-  }
+  } 
 }
 
 export async function fetchCustomers() {
@@ -214,5 +236,5 @@ export async function fetchFilteredCustomers(query: string) {
   } catch (err) {
     console.error('Database Error:', err);
     throw new Error('Failed to fetch customer table.');
-  }
+  } 
 }

@@ -4,7 +4,11 @@ import bcrypt from 'bcryptjs';
 import postgres from 'postgres';
 import { invoices, customers, revenue, users } from '../lib/placeholder-data';
 
+// デプロイ環境用
 const sql = postgres(process.env.POSTGRES_URL!, { ssl: 'require' });
+
+// ローカル開発環境用
+// const sql = postgres(process.env.POSTGRES_URL!, { ssl: false });
 
 async function seedUsers() {
   await sql`CREATE EXTENSION IF NOT EXISTS "uuid-ossp"`;
@@ -115,6 +119,25 @@ export async function GET() {
 
     return Response.json({ message: 'Database seeded successfully' });
   } catch (error) {
-    return Response.json({ error }, { status: 500 });
+    console.error('Error during seeding:', error); // エラー内容をログに出力
+    return Response.json(
+      { error: error instanceof Error ? error.message : 'Unknown error' },
+      { status: 500 }
+    );
   }
+
+
+  // async function testConnection() {
+  //   try {
+  //     // console.log('POSTGRES_URL:', process.env.POSTGRES_URL);
+  //     const result = await sql`SELECT 1 + 1 AS result`;
+  //     console.log('Connection successful:', result);
+  //     return Response.json({ message: 'Connection successful', result });
+  //   } catch (error) {
+  //     console.error('Connection failed:', error);
+  //     return Response.json({ error: error instanceof Error ? error.message : 'Unknown error' }, { status: 500 });
+  //   }
+  // }
+
+  // return testConnection();
 }
