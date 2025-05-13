@@ -1,3 +1,5 @@
+export const runtime = 'nodejs';
+
 import bcrypt from 'bcryptjs';
 import postgres from 'postgres';
 import { invoices, customers, revenue, users } from '../lib/placeholder-data';
@@ -107,6 +109,7 @@ async function seedRevenue() {
 
 export async function GET() {
   try {
+    console.log('POSTGRES_URL:', process.env.POSTGRES_URL);
     const result = await sql.begin((sql) => [
       seedUsers(),
       seedCustomers(),
