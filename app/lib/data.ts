@@ -10,10 +10,10 @@ import {
 import { formatCurrency } from './utils';
 
 // デプロイ環境用
-// const sql = postgres(process.env.POSTGRES_URL!, { ssl: 'require' });
+const sql = postgres(process.env.POSTGRES_URL!, { ssl: 'require' });
 
 //ローカル開発環境用
-const sql = postgres(process.env.POSTGRES_URL!, { ssl: false });
+// const sql = postgres(process.env.POSTGRES_URL!, { ssl: false });
 
 // アプリケーション終了時に接続を閉じる
 process.on('SIGINT', async () => {

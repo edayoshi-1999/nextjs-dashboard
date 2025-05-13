@@ -7,7 +7,7 @@ import { redirect } from 'next/navigation';
 import { signIn } from '@/auth';
 import { AuthError } from 'next-auth';
  
-const sql = postgres(process.env.POSTGRES_URL!, { ssl: false });
+const sql = postgres(process.env.POSTGRES_URL!, { ssl: "require" });
 
 // アプリケーション終了時に接続を閉じる
 process.on('SIGINT', async () => {

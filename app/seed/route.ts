@@ -3,10 +3,10 @@ import postgres from 'postgres';
 import { invoices, customers, revenue, users } from '../lib/placeholder-data';
 
 // デプロイ環境用
-// const sql = postgres(process.env.POSTGRES_URL!, { ssl: 'require' });
+const sql = postgres(process.env.POSTGRES_URL!, { ssl: 'require' });
 
 // ローカル開発環境用
-const sql = postgres(process.env.POSTGRES_URL!, { ssl: false });
+// const sql = postgres(process.env.POSTGRES_URL!, { ssl: false });
 
 async function seedUsers() {
   await sql`CREATE EXTENSION IF NOT EXISTS "uuid-ossp"`;
